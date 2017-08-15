@@ -56,7 +56,7 @@
         this.pullInfo.innerHTML = this.pullMessage;
         this.startY = e.touches[0].pageY;
         e.target.addEventListener('touchmove', this.pullMove.bind(this), false);
-        e.target.addEventListener('touchend', this.pullend.bind(this), false);
+        e.target.addEventListener('touchend', this.pullEnd.bind(this), false);
     }
 
     pullMove(e: TouchEvent) {
@@ -88,9 +88,9 @@
         }
     }
 
-    pullend(e: TouchEvent) {
+    pullEnd(e: TouchEvent) {
         e.target.removeEventListener('touchmove', this.pullMove, false);
-        e.target.removeEventListener('touchend', this.pullend, false);
+        e.target.removeEventListener('touchend', this.pullEnd, false);
         if (!this.fireFlag) {
             this.receiveContent();
             return;
