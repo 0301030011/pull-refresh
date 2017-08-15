@@ -1,0 +1,22 @@
+{
+  "name": "pull-refresh",
+  "version": "1.0.0",
+  "description": "javascript 下拉刷新",
+  "main": "dist/pull-refresh.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhongqc/pull-refresh.git"
+  },
+  "keywords": [
+    "refresh"
+  ],
+  "author": "zhongqc",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zhongqc/pull-refresh/issues"
+  },
+  "homepage": "https://github.com/zhongqc/pull-refresh#readme"
+}
