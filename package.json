@@ -4,6 +4,7 @@
   "description": "javascript 下拉刷新",
   "main": "dist/pull-refresh.js",
   "scripts": {
+    "build": "npm install && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/zhongqc/pull-refresh/issues"
   },
-  "homepage": "https://github.com/zhongqc/pull-refresh#readme"
+  "homepage": "https://github.com/zhongqc/pull-refresh#readme",
+  "devDependencies": {
+    "typescript": "^2.4.2"
+  }
 }
