@@ -38,13 +38,14 @@
     addStyle() {
         let style = document.createElement('style');
         let pullTop = this.pullContent.offsetTop;
-        style.innerHTML = `.pullInfo { max-height: ${ this.pullHeight }px; height: 0; line-height: 0; position: absolute; width: 100%; top: ${ pullTop }px; left: 0; right: 0; text-align: center; z-index: -1; }`;
+        style.innerHTML = `.pull-info { max-height: ${ this.pullHeight }px; height: 0; line-height: 0; position: absolute; width: 100%; top: ${ pullTop }px; left: 0; right: 0; text-align: center; z-index: -1; }
+        .pull-hide { display: none!important; }`;
         document.querySelector('head').appendChild(style);
     }
 
     setPullRefresh() {
         this.pullInfo = document.createElement('div');
-        this.pullInfo.className = 'pullInfo';
+        this.pullInfo.className = 'pull-info pull-hide';
         document.getElementsByTagName('body')[0].insertBefore(this.pullInfo, this.pullContent);
         this.pullContent.addEventListener('touchstart', this.pullStart.bind(this), false);
     }
@@ -54,6 +55,7 @@
             return;
         }
         this.pullInfo.innerHTML = this.pullMessage;
+        this.pullInfo.classList.remove('pull-hide');
         this.startY = e.touches[0].pageY;
         e.target.addEventListener('touchmove', this.pullMove.bind(this), false);
         e.target.addEventListener('touchend', this.pullEnd.bind(this), false);
@@ -103,6 +105,7 @@
         this.pullContent.style.transform = 'translateY(0)';
         this.pullInfo.style.height = '0';
         this.pullInfo.style.lineHeight = '0';
+        this.pullInfo.classList.add('pull-hide');
         this.fireFlag = false;
         setTimeout(() => {
             this.setTransitionDuration(0);
