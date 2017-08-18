@@ -55,7 +55,6 @@
             return;
         }
         this.pullInfo.innerHTML = this.pullMessage;
-        this.pullInfo.classList.remove('pull-hide');
         this.startY = e.touches[0].pageY;
         e.target.addEventListener('touchmove', this.pullMove.bind(this), false);
         e.target.addEventListener('touchend', this.pullEnd.bind(this), false);
@@ -66,8 +65,10 @@
         this.distanceY = currentY - this.startY;
         if (this.distanceY <= 0 || this.pullContent.scrollTop > 0) {
             e.target.removeEventListener('touchmove', this.pullMove, false);
+            e.target.removeEventListener('touchend', this.pullEnd, false);
             return;
         }
+        this.pullInfo.classList.remove('pull-hide');
         this.moveContent();
     }
 
@@ -77,6 +78,10 @@
             this.pullInfo.style.height = distanceYStr;
             this.pullInfo.style.lineHeight = distanceYStr;
             this.pullContent.style.transform = `translateY(${ distanceYStr })`;
+            if (this.fireFlag) {
+                this.fireFlag = false;
+                this.pullInfo.innerHTML = this.pullMessage;
+            }
         } else {
             if (!this.fireFlag) {
                 let pullHeightStr = `${ this.pullHeight }px`;
