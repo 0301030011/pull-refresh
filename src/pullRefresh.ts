@@ -1,5 +1,6 @@
 ﻿class pullRefresh {
     selector: string;
+    allowScrollElement: HTMLElement;
     pullHeight: number;
     pullMessage: string;
     holdMessage: string;
@@ -15,10 +16,17 @@
     pullContent: HTMLElement;
     startY: number;
     distanceY: number;
+    lastY: number;
     pullInfo: HTMLElement;
 
-    constructor(options: { selector: string, pullHeight: number, pullMessage: string, holdMessage: string, refreshMessage: string, refreshEndMessage: string, transitionDuration: string }, fireEvent: (fireEventEnd: () => void) => void) {
+    pullStartWithThis: (e: TouchEvent) => void;
+    pullMoveWithThis: (e: TouchEvent) => void;
+    pullEndWithThis: (e: TouchEvent) => void;
+
+    constructor(options: { selector: string, allowScrollElement: string, pullHeight: number, pullMessage: string, holdMessage: string, refreshMessage: string, refreshEndMessage: string, transitionDuration: string }, fireEvent: (fireEventEnd: () => void) => void) {
         this.selector = options.selector;
+        let allowScrollElement = options.allowScrollElement || 'body';
+        this.allowScrollElement = <HTMLElement>document.querySelector(allowScrollElement);
         this.pullHeight = options.pullHeight || 44;
         this.pullMessage = options.pullMessage || '下拉以刷新数据...';
         this.holdMessage = options.holdMessage || '松开刷新';
@@ -27,6 +35,11 @@
         this.transitionDuration = options.transitionDuration || '200ms';
         this.pullContent = <HTMLElement>document.querySelector(this.selector);
         this.fireEvent = fireEvent;
+
+        this.pullStartWithThis = this.pullStart.bind(this);
+        this.pullMoveWithThis = this.pullMove.bind(this);
+        this.pullEndWithThis = this.pullEnd.bind(this);
+
         this.init();
     }
 
@@ -38,7 +51,7 @@
     addStyle() {
         let style = document.createElement('style');
         let pullTop = this.pullContent.offsetTop;
-        style.innerHTML = `.pull-info { max-height: ${ this.pullHeight }px; height: 0; line-height: 0; position: absolute; width: 100%; top: ${ pullTop }px; left: 0; right: 0; text-align: center; z-index: -1; }
+        style.innerHTML = `.pull-info { max-height: ${ this.pullHeight }px; height: 0; line-height: 0; position: absolute; width: 100%; top: ${ pullTop }px; left: 0; right: 0; text-align: center; z-index: 1; }
         .pull-hide { display: none!important; }`;
         document.querySelector('head').appendChild(style);
     }
@@ -46,26 +59,37 @@
     setPullRefresh() {
         this.pullInfo = document.createElement('div');
         this.pullInfo.className = 'pull-info pull-hide';
-        document.getElementsByTagName('body')[0].insertBefore(this.pullInfo, this.pullContent);
-        this.pullContent.addEventListener('touchstart', this.pullStart.bind(this), false);
+        this.pullContent.parentElement.insertBefore(this.pullInfo, this.pullContent);
+        this.pullContent.addEventListener('touchstart', this.pullStartWithThis, false);
     }
 
     pullStart(e: TouchEvent) {
+        // if (this.isRefreshFlag || this.pullContent.scrollTop > 0 || this.allowScrollElement.scrollTop > 0) {
+        //     return;
+        // }
         if (this.isRefreshFlag) {
             return;
         }
         this.pullInfo.innerHTML = this.pullMessage;
         this.startY = e.touches[0].pageY;
-        e.target.addEventListener('touchmove', this.pullMove.bind(this), false);
-        e.target.addEventListener('touchend', this.pullEnd.bind(this), false);
+        e.currentTarget.addEventListener('touchmove', this.pullMoveWithThis, false);
+        e.currentTarget.addEventListener('touchend', this.pullEndWithThis, false);
     }
-
+    
     pullMove(e: TouchEvent) {
+        if (this.pullContent.scrollTop > 0 || this.allowScrollElement.scrollTop > 0) {
+            return;
+        }
         let currentY = e.touches[0].pageY;
         this.distanceY = currentY - this.startY;
-        if (this.distanceY <= 0 || this.pullContent.scrollTop > 0) {
-            e.target.removeEventListener('touchmove', this.pullMove, false);
-            e.target.removeEventListener('touchend', this.pullEnd, false);
+        if (this.lastY > currentY && this.distanceY > 0) {
+            e.preventDefault();//阻止默认滚动事件
+        }
+        this.lastY = currentY;
+        if (this.distanceY <= 0) {
+            this.receiveContent();
+            // e.currentTarget.removeEventListener('touchmove', this.pullMoveWithThis, false);
+            // e.currentTarget.removeEventListener('touchend', this.pullEndWithThis, false);
             return;
         }
         this.pullInfo.classList.remove('pull-hide');
@@ -96,8 +120,8 @@
     }
 
     pullEnd(e: TouchEvent) {
-        e.target.removeEventListener('touchmove', this.pullMove, false);
-        e.target.removeEventListener('touchend', this.pullEnd, false);
+        e.currentTarget.removeEventListener('touchmove', this.pullMoveWithThis, false);
+        e.currentTarget.removeEventListener('touchend', this.pullEndWithThis, false);
         if (!this.fireFlag) {
             this.receiveContent();
             return;

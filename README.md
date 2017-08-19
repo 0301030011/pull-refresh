@@ -17,6 +17,7 @@ npm run build
 ```javascript
 let params = {
     selector: string, //触发下拉刷新的对象的选择器
+    allowScrollElement: string, //需要滚动的元素选择器，默认为body，防止需要正常滚动的元素无法正常向下拖动
     pullHeight: number, //触发刷新时间的移动高度，移动距离大于此高度的情况下才会刷新，下拉显示条的最大高度，刷新时会回弹到此高度，默认为44
     pullMessage: string, //下拉时显示的信息，可以为文本或html，默认为'下拉以刷新数据...'
     holdMessage: string, //移动距离大于触发高度时显示的文本，同样可为文本或html，默认'松开刷新'
