@@ -64,9 +64,6 @@
     }
 
     pullStart(e: TouchEvent) {
-        // if (this.isRefreshFlag || this.pullContent.scrollTop > 0 || this.allowScrollElement.scrollTop > 0) {
-        //     return;
-        // }
         if (this.isRefreshFlag) {
             return;
         }
@@ -88,8 +85,6 @@
         this.lastY = currentY;
         if (this.distanceY <= 0) {
             this.receiveContent();
-            // e.currentTarget.removeEventListener('touchmove', this.pullMoveWithThis, false);
-            // e.currentTarget.removeEventListener('touchend', this.pullEndWithThis, false);
             return;
         }
         this.pullInfo.classList.remove('pull-hide');
