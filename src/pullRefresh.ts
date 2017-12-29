@@ -7,6 +7,7 @@
     refreshMessage: string;
     refreshEndMessage: string;
     transitionDuration: string;
+    refreshEndHoldTime: number;
 
     fireEvent: (fireEventEnd: () => void) => void;
 
@@ -23,7 +24,7 @@
     pullMoveWithThis: (e: TouchEvent) => void;
     pullEndWithThis: (e: TouchEvent) => void;
 
-    constructor(options: { selector: string, allowScrollElement: string, pullHeight: number, pullMessage: string, holdMessage: string, refreshMessage: string, refreshEndMessage: string, transitionDuration: string }, fireEvent: (fireEventEnd: () => void) => void) {
+    constructor(options: { selector: string, allowScrollElement: string, pullHeight: number, pullMessage: string, holdMessage: string, refreshMessage: string, refreshEndMessage: string, transitionDuration: string, refreshEndHoldTime: number }, fireEvent: (fireEventEnd: () => void) => void) {
         this.selector = options.selector;
         let allowScrollElement = options.allowScrollElement || 'body';
         this.allowScrollElement = <HTMLElement>document.querySelector(allowScrollElement);
@@ -33,6 +34,7 @@
         this.refreshMessage = options.refreshMessage || '刷新中...';
         this.refreshEndMessage = options.refreshEndMessage || '刷新完成';
         this.transitionDuration = options.transitionDuration || '200ms';
+        this.refreshEndHoldTime = options.refreshEndHoldTime || 1000;
         this.pullContent = <HTMLElement>document.querySelector(this.selector);
         this.fireEvent = fireEvent;
 
@@ -133,7 +135,7 @@
         this.fireFlag = false;
         setTimeout(() => {
             this.setTransitionDuration(0);
-        });
+        }, 1);
     }
 
     bounceContent() {
@@ -154,7 +156,9 @@
     fireEventFinish() {
         this.pullInfo.innerHTML = this.refreshEndMessage;
         this.isRefreshFlag = false;
-        this.receiveContent();
+        setTimeout(() => {
+            this.receiveContent();
+        }, this.refreshEndHoldTime);
     }
 
     setTransitionDuration(duration: number): void;
